@@ -38,7 +38,12 @@ export const getWorkerInstance = async (
   if (existingRegistration) {
     // Schedule the worker update in the background.
     // Update ensures the existing worker is up-to-date.
-    existingRegistration.update()
+    void existingRegistration.update().catch((error) => {
+      devUtils.warn(
+        'Failed to update the Service Worker registration. The existing worker will be used instead.\n\n%s',
+        error instanceof Error ? error.message : String(error),
+      )
+    })
 
     // Return the worker reference immediately.
     return [
