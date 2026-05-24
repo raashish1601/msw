@@ -8,6 +8,7 @@ import {
   type MemoryCookieStoreIndex,
 } from 'tough-cookie'
 import { jsonParse } from './internal/jsonParse'
+import { devUtils } from './internal/devUtils'
 
 class CookieStore {
   #storageKey = '__msw-cookie-store__'
@@ -88,7 +89,14 @@ class CookieStore {
       }
     }
 
-    localStorage.setItem(this.#storageKey, JSON.stringify(data))
+    try {
+      localStorage.setItem(this.#storageKey, JSON.stringify(data))
+    } catch (error) {
+      devUtils.warn(
+        'Failed to persist cookies to localStorage. Cookies will remain available in memory for the current session. %s',
+        error,
+      )
+    }
   }
 }
 
